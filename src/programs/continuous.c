@@ -10,7 +10,6 @@
  *   - Single-threaded implementation for portability.
  *   - Uses audio library; can be replaced with an equivalent custom library.
  */
-
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -56,8 +55,7 @@ static ps_decoder_t *ps;
 static cmd_ln_t *config;
 static FILE *rawfd;
 
-static void print_word_times()
-{
+static void print_word_times() {
     int frame_rate = cmd_ln_int32_r(config, "-frate");
     ps_seg_t *iter = ps_seg_iter(ps);
     while (iter != NULL) {
@@ -106,21 +104,18 @@ static void recognize_from_file() {
     int32 print_times = cmd_ln_boolean_r(config, "-time");
 
     fname = cmd_ln_str_r(config, "-infile");
-    if ((rawfd = fopen(fname, "rb")) == NULL) {
-        E_FATAL_SYSTEM("Failed to open file '%s' for reading",
-                       fname);
-    }
+    if ((rawfd = fopen(fname, "rb")) == NULL)
+        E_FATAL_SYSTEM("Failed to open file '%s' for reading", fname);
     
     if (strlen(fname) > 4 && strcmp(fname + strlen(fname) - 4, ".wav") == 0) {
         char waveheader[44];
-	fread(waveheader, 1, 44, rawfd);
-	if (!check_wav_header(waveheader, (int)cmd_ln_float32_r(config, "-samprate")))
+		fread(waveheader, 1, 44, rawfd);
+		if (!check_wav_header(waveheader, (int)cmd_ln_float32_r(config, "-samprate")))
     	    E_FATAL("Failed to process file '%s' due to format mismatch.\n", fname);
     }
 
-    if (strlen(fname) > 4 && strcmp(fname + strlen(fname) - 4, ".mp3") == 0) {
-	E_FATAL("Can not decode mp3 files, convert input file to WAV 16kHz 16-bit mono before decoding.\n");
-    }
+    if (strlen(fname) > 4 && strcmp(fname + strlen(fname) - 4, ".mp3") == 0)
+		E_FATAL("Can not decode mp3 files, convert input file to WAV 16kHz 16-bit mono before decoding.\n");
     
     ps_start_utt(ps);
     utt_started = FALSE;
@@ -128,9 +123,9 @@ static void recognize_from_file() {
     while ((k = fread(adbuf, sizeof(int16), 2048, rawfd)) > 0) {
         ps_process_raw(ps, adbuf, k, FALSE, FALSE);
         in_speech = ps_get_in_speech(ps);
-        if (in_speech && !utt_started) {
+        if (in_speech && !utt_started)
             utt_started = TRUE;
-        } 
+
         if (!in_speech && utt_started) {
             ps_end_utt(ps);
             hyp = ps_get_hyp(ps, NULL);
@@ -149,10 +144,9 @@ static void recognize_from_file() {
         hyp = ps_get_hyp(ps, NULL);
         if (hyp != NULL) {
     	    printf("%s\n", hyp);
-    	    if (print_times) {
-    		print_word_times();
-	    }
-	}
+    	    if (print_times)
+    			print_word_times();
+		}
     }
     
     fclose(rawfd);
@@ -234,9 +228,8 @@ int main(int argc, char *argv[]) {
     config = cmd_ln_parse_r(NULL, cont_args_def, argc, argv, TRUE);
 
     /* Handle argument file as -argfile. */
-    if (config && (cfg = cmd_ln_str_r(config, "-argfile")) != NULL) {
+    if (config && (cfg = cmd_ln_str_r(config, "-argfile")) != NULL)
         config = cmd_ln_parse_file_r(config, cont_args_def, cfg, FALSE);
-    }
 
     if (config == NULL || (cmd_ln_str_r(config, "-infile") == NULL && cmd_ln_boolean_r(config, "-inmic") == FALSE)) {
 	E_INFO("Specify '-infile <file.wav>' to recognize from file or '-inmic yes' to recognize from microphone.\n");
@@ -253,11 +246,10 @@ int main(int argc, char *argv[]) {
 
     E_INFO("%s COMPILED ON: %s, AT: %s\n\n", argv[0], __DATE__, __TIME__);
 
-    if (cmd_ln_str_r(config, "-infile") != NULL) {
+    if (cmd_ln_str_r(config, "-infile") != NULL)
         recognize_from_file();
-    } else if (cmd_ln_boolean_r(config, "-inmic")) {
+	else if (cmd_ln_boolean_r(config, "-inmic"))
         recognize_from_microphone();
-    }
 
     ps_free(ps);
     cmd_ln_free_r(config);
