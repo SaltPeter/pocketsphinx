@@ -58,8 +58,7 @@ static ps_decoder_t *ps;
 static cmd_ln_t *config;
 static FILE *rawfd;
 
-static void
-print_word_times()
+static void print_word_times()
 {
     int frame_rate = cmd_ln_int32_r(config, "-frate");
     ps_seg_t *iter = ps_seg_iter(ps);
@@ -76,9 +75,7 @@ print_word_times()
     }
 }
 
-static int
-check_wav_header(char *header, int expected_sr)
-{
+static int check_wav_header(char *header, int expected_sr) {
     int sr;
 
     if (header[34] != 0x10) {
@@ -104,9 +101,7 @@ check_wav_header(char *header, int expected_sr)
 /*
  * Continuous recognition from a file
  */
-static void
-recognize_from_file()
-{
+static void recognize_from_file() {
     int16 adbuf[2048];
     const char *fname;
     const char *hyp;
@@ -168,9 +163,7 @@ recognize_from_file()
 }
 
 /* Sleep for specified msec */
-static void
-sleep_msec(int32 ms)
-{
+static void sleep_msec(int32 ms) {
 #if (defined(_WIN32) && !defined(GNUWINCE)) || defined(_WIN32_WCE)
     Sleep(ms);
 #else
@@ -192,9 +185,7 @@ sleep_msec(int32 ms)
  *        print utterance result;
  *     }
  */
-static void
-recognize_from_microphone()
-{
+static void recognize_from_microphone() {
     ad_rec_t *ad;
     int16 adbuf[2048];
     uint8 utt_started, in_speech;
@@ -241,9 +232,7 @@ recognize_from_microphone()
     ad_close(ad);
 }
 
-int
-main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     char const *cfg;
 
     config = cmd_ln_parse_r(NULL, cont_args_def, argc, argv, TRUE);
@@ -284,9 +273,7 @@ main(int argc, char *argv[])
 #pragma comment(linker,"/entry:mainWCRTStartup")
 #include <windows.h>
 //Windows Mobile has the Unicode main only
-int
-wmain(int32 argc, wchar_t * wargv[])
-{
+int wmain(int32 argc, wchar_t * wargv[]) {
     char **argv;
     size_t wlen;
     size_t len;
