@@ -2,8 +2,6 @@
 /*
  * continuous.c - Simple pocketsphinx command-line application to test both continuous listening/silence filtering from microphone
  *                and continuous file transcription.
- */
-/*
  * This is a simple example of pocketsphinx application that uses continuous listening
  * with silence filtering to automatically segment a continuous stream of audio input
  * into utterances that are then decoded.
@@ -98,9 +96,7 @@ static int check_wav_header(char *header, int expected_sr) {
     return 1;
 }
 
-/*
- * Continuous recognition from a file
- */
+// Continuous recognition from a file
 static void recognize_from_file() {
     int16 adbuf[2048];
     const char *fname;
